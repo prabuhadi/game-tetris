@@ -5,7 +5,7 @@ context.scale(20, 20);
 
 function arenaSweep() {
   let rowCount = 1;
-  outer: for (let y = arena.length; y > 0; y--) {
+  outer: for (let y = arena.length - 1; y > 0; y--) {
     for (let x = 0; x < arena[y].length; x++) {
       if (arena[y][x] === 0) {
         continue outer;
@@ -25,7 +25,7 @@ function collide(arena, player) {
   const o = player.pos;
   for (let y = 0; y < m.length; y++) {
     for (let x = 0; x < m[y].length; x++) {
-      if (m[f][x] !== 0 && (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) {
+      if (m[y][x] !== 0 && (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) {
         return true;
       }
     }
@@ -62,7 +62,10 @@ function createPiece(type) {
       [3, 3, 0],
     ];
   } else if (type === "O") {
-    return [[4, 4][(4, 4)]];
+    return [
+      [4, 4],
+      [4, 4],
+    ];
   } else if (type === "Z") {
     return [
       [5, 5, 0],
@@ -76,7 +79,11 @@ function createPiece(type) {
       [0, 0, 0],
     ];
   } else if (type === "T") {
-    return [[0, 7, 0][(7, 7, 7)][(0, 0, 0)]];
+    return [
+      [0, 7, 0],
+      [7, 7, 7],
+      [0, 0, 0],
+    ];
   }
 }
 
@@ -144,7 +151,8 @@ function playerReset() {
   const pieces = "TJLOSZI";
   player.matrix = createPiece(pieces[(pieces.length * Math.random()) | 0]);
   player.pos.y = 0;
-  player.pos.x = ((arena[0].length / 2) | 0) - ((player.matrix[0] / 2) | 0);
+  player.pos.x =
+    ((arena[0].length / 2) | 0) - ((player.matrix[0].length / 2) | 0);
   if (collide(arena, player)) {
     arena.forEach((row) => row.fill(0));
     player.score = 0;
@@ -177,7 +185,7 @@ function update(time = 0) {
   if (dropCounter > dropInterval) {
     playerDrop();
   }
-  lastTIme = time;
+  lastTime = time;
   draw();
   requestAnimationFrame(update);
 }
@@ -187,6 +195,15 @@ function updateScore() {
 }
 
 document.addEventListener("keydown", (event) => {
+  // Key:
+  /*
+  37 = arrowLeft
+  39 = arrowRight
+  40 = arrowDown
+  81 = Q
+  87 = W
+  */
+
   if (event.keyCode === 37) {
     playerMove(-1);
   } else if (event.keyCode === 39) {
